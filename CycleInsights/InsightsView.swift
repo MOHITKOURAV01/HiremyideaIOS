@@ -275,7 +275,61 @@ private struct CycleTrendsSection: View {
     }
 }
 
+private struct CycleTrendBar: View {
+    let datum: CycleTrendDatum
+    @GestureState private var isPressed = false
+
+    var body: some View {
+        VStack(spacing: 6) {
+            Text("\(datum.value)")
+                .font(.system(size: 14, weight: .bold))
+                .foregroundColor(.darkText)
+
+            ZStack(alignment: .bottom) {
+                // Lavender pill (full bar, rounded top only)
+                RoundedRectangle(cornerRadius: 22)
+                    .fill(Color(hex: "C4BEDE").opacity(0.6))
+                    .frame(width: 50, height: 170)
+
+                // Pink bottom section
+                UnevenRoundedRectangle(
+                    topLeadingRadius: 0,
+                    bottomLeadingRadius: 22,
+                    bottomTrailingRadius: 22,
+                    topTrailingRadius: 0
+                )
+                .fill(Color(hex: "F2A0A8"))
+                .frame(width: 50, height: 60)
+
+                // Gear circle at junction point
+                Circle()
+                    .fill(Color(hex: "5E8B7E"))
+                    .frame(width: 44, height: 44)
+                    .overlay(
+                        Image(systemName: "gearshape.fill")
+                            .foregroundColor(.white)
+                            .font(.system(size: 18))
+                    )
+                    .offset(y: -40)
+            }
+            .frame(width: 50, height: 170)
+
+            Text(datum.month)
+                .font(.system(size: 12))
+                .foregroundColor(Color(hex: "8E8E93"))
+        }
+        .scaleEffect(isPressed ? 0.96 : 1.0)
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 0)
+                .updating($isPressed) { _, state, _ in
+                    state = true
+                }
+        )
+    }
+}
+
 #Preview {
+
 
 
 
