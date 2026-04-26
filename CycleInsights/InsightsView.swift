@@ -438,7 +438,136 @@ private struct WeightChartCard: View {
     }
 }
 
+private struct SymptomDonutCard: View {
+    let segments: [DonutSegment]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Symptom Distribution")
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundColor(.darkText)
+                Text("Most frequent symptoms this cycle.")
+                    .font(.system(size: 13))
+                    .foregroundColor(.subText)
+            }
+
+            HStack {
+                Spacer()
+                GeometryReader { geometry in
+                    let size = min(geometry.size.width, 260)
+                    let center = CGPoint(x: size / 2, y: size / 2)
+                    let outerRadius = size * 0.38
+                    let innerRadius = outerRadius * 0.6
+                    let labelRadius = outerRadius + 72
+
+                    ZStack {
+                        Canvas { context, canvasSize in
+                            let drawingCenter = CGPoint(x: canvasSize.width / 2, y: canvasSize.height / 2)
+                            var startAngle = Angle.degrees(-90)
+
+                            for segment in segments {
+                                let gap = Angle.degrees(2.5)
+                                let segmentAngle = Angle.degrees((segment.value / 100) * 360)
+                                let endAngle = startAngle + segmentAngle - gap
+
+                                var path = Path()
+                                path.addArc(
+                                    center: drawingCenter,
+                                    radius: outerRadius,
+                                    startAngle: startAngle,
+                                    endAngle: endAngle,
+                                    clockwise: false
+                                )
+                                path.addArc(
+                                    center: drawingCenter,
+                                    radius: innerRadius,
+                                    startAngle: endAngle,
+                                    endAngle: startAngle,
+                                    clockwise: true
+                                )
+                                path.closeSubpath()
+
+                                context.fill(path, with: .color(segment.color))
+                                startAngle = startAngle + segmentAngle
+                            }
+                        }
+                        .frame(width: size, height: size)
+                        .overlay {
+                            Circle()
+                                .fill(Color.white)
+                                .frame(width: innerRadius * 2, height: innerRadius * 2)
+                        }
+
+                        ForEach(positionedSegments(in: size, center: center, labelRadius: labelRadius)) { item in
+                            DonutLabel(segment: item.segment)
+                                .position(item.position)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+                .frame(height: 280)
+                Spacer()
+            }
+            .frame(maxWidth: .infinity)
+        }
+        .cardStyle()
+    }
+
+    private func positionedSegments(in size: CGFloat, center: CGPoint, labelRadius: CGFloat) -> [PositionedSegment] {
+        var positioned: [PositionedSegment] = []
+        var currentAngle = -90.0
+        
+        for segment in segments {
+            let segmentAngle = (segment.value / 100.0) * 360.0
+            let middleAngle = currentAngle + (segmentAngle / 2.0)
+            let angleInRadians = middleAngle * .pi / 180.0
+            
+            let x = center.x + labelRadius * cos(angleInRadians)
+            let y = center.y + labelRadius * sin(angleInRadians)
+            
+            positioned.append(PositionedSegment(segment: segment, position: CGPoint(x: x, y: y)))
+            currentAngle += segmentAngle
+        }
+        return positioned
+    }
+}
+
+private struct DonutLabel: View {
+    let segment: DonutSegment
+    
+    var body: some View {
+        VStack(spacing: 2) {
+            Text(segment.name)
+                .font(.system(size: 11, weight: .bold))
+                .foregroundColor(.darkText)
+            Text("\(Int(segment.value))%")
+                .font(.system(size: 10, weight: .medium))
+                .foregroundColor(.subText)
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .background(Color.white)
+        .cornerRadius(8)
+        .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
+    }
+}
+
+private struct DonutSegment: Identifiable {
+    let id = UUID()
+    let name: String
+    let value: Double
+    let color: Color
+}
+
+private struct PositionedSegment: Identifiable {
+    let id = UUID()
+    let segment: DonutSegment
+    let position: CGPoint
+}
+
 #Preview {
+
 
 
 
