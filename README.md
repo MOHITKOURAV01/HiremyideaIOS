@@ -14,8 +14,9 @@ A premium, health-focused iOS application designed to provide deep insights into
 ## Preview
 
 <p align="center">
-  <img src="screenshot_simulator.png" width="45%" />
-  <img src="screenshot_simulator_2.png" width="45%" />
+  <img src="ss1_dashboard.png" width="30%" />
+  <img src="ss2_charts.png" width="30%" />
+  <img src="ss3_lifestyle.png" width="30%" />
 </p>
 
 ## 🛠 Tech Stack
