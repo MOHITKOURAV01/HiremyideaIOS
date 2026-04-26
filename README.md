@@ -1,15 +1,23 @@
 # Cycle Insights
 
-A premium, health-focused iOS application designed to provide deep insights into menstrual cycles, symptom patterns, and lifestyle correlations. Built with a focus on rich aesthetics, interactive charts, and a seamless user experience.
+Cycle Insights is a professional-grade menstrual health tracking application for iOS. It leverages data visualization and lifestyle correlation to provide users with a deeper understanding of their biological patterns. The application is built with modern SwiftUI and Swift Charts, focusing on precision, aesthetics, and user engagement.
 
-## ✨ Features
+## Key Features
 
-- **Stability Summary**: Track your cycle stability with interactive area charts and dynamic trend tooltips.
-- **Cycle Trends**: Visualize your cycle length over time with custom-proportioned bar charts and smooth horizontal navigation.
-- **Symptom Distribution**: Understand your most frequent symptoms with a beautiful donut chart and detailed breakdown.
-- **Lifestyle Impact**: Interactive heatmap correlating sleep, stress, activity, and diet with your cycle health.
-- **Health & Vitals**: Track weight changes and other vitals with interactive line and area charts.
-- **Premium Design**: Modern, glassmorphic UI with vibrant colors, smooth entrance animations, and a custom-built navigation system.
+### Stability Analysis
+Monitor your cycle's consistency using interactive area charts. The application identifies patterns and provides dynamic feedback on stability trends over time.
+
+### Cycle Trend Visualization
+Track your cycle length across multiple months with custom-designed bar charts. The interactive scrolling interface allows for easy navigation through your historical data.
+
+### Symptom Distribution
+A comprehensive donut chart provides a visual breakdown of your most frequent symptoms, helping you identify recurring health patterns within each cycle.
+
+### Lifestyle Correlation
+The lifestyle impact heatmap correlates your logs for sleep, stress, activity, and diet with your cycle health, offering a holistic view of your wellbeing.
+
+### Health and Vitals
+Dedicated tracking for weight and other essential vitals with interactive line and area charts, ensuring you stay on top of your physical progress.
 
 ## Preview
 
@@ -19,18 +27,20 @@ A premium, health-focused iOS application designed to provide deep insights into
   <img src="ss3_lifestyle.png" width="30%" />
 </p>
 
-## 🛠 Tech Stack
+## Technical Specifications
 
-- **Core**: Swift, SwiftUI
+- **Language**: Swift
+- **Framework**: SwiftUI
 - **Data Visualization**: Swift Charts
-- **Architecture**: MVVM (Model-View-ViewModel)
-- **Styling**: Vanilla SwiftUI with custom design tokens and components
+- **Architecture**: MVVM
+- **UI/UX**: Custom-built design system with a focus on modern aesthetics and smooth animations.
 
-## 🚀 Getting Started
+## Getting Started
 
-1. Open `CycleInsights.xcodeproj` in Xcode 15+.
-2. Select a simulator (e.g., iPhone 15 Pro or later).
-3. Press `Cmd + R` to build and run.
+1. Clone the repository to your local machine.
+2. Open `CycleInsights.xcodeproj` in the latest version of Xcode.
+3. Select an iOS Simulator (iPhone 15 Pro or later recommended).
+4. Build and run the project using Command + R.
 
 ---
-Developed with ❤️ for health transparency.
+Developed for health transparency and data-driven insights.
