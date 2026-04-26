@@ -356,9 +356,13 @@ private struct CycleTrendsSection: View {
                                 .id(item.id)
                         }
                     }
-                    .padding(.horizontal, 4)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
                 }
                 .frame(maxWidth: .infinity)
+                .onAppear {
+                    proxy.scrollTo(data[0].id, anchor: .leading)
+                }
                 .onChange(of: visibleStartIndex) { _, newValue in
                     withAnimation {
                         proxy.scrollTo(data[newValue].id, anchor: .leading)
@@ -554,11 +558,12 @@ private struct WeightChartCard: View {
     }
 }
 
-private struct SymptomDonutCard: View {
+struct SymptomDonutCard: View {
     let segments: [DonutSegment]
-
+    
     var body: some View {
-        VStack(alignment: .leading, spacing: 18) {
+        VStack(alignment: .leading, spacing: 12) {
+            // Header
             VStack(alignment: .leading, spacing: 4) {
                 Text("Symptom Trends")
                     .font(.system(size: 16, weight: .bold))
@@ -567,85 +572,93 @@ private struct SymptomDonutCard: View {
                     .font(.system(size: 13))
                     .foregroundColor(.subText)
             }
-
-            HStack {
-                Spacer()
-                GeometryReader { geometry in
-                    let size = min(geometry.size.width, 260)
-                    let center = CGPoint(x: size / 2, y: size / 2)
-                    let outerRadius = size * 0.38
-                    let innerRadius = outerRadius * 0.6
-                    let labelRadius = outerRadius + 72
-
-                    ZStack {
-                        Canvas { context, canvasSize in
-                            let drawingCenter = CGPoint(x: canvasSize.width / 2, y: canvasSize.height / 2)
-                            var startAngle = Angle.degrees(-90)
-
-                            for segment in segments {
-                                let gap = Angle.degrees(2.5)
-                                let segmentAngle = Angle.degrees((segment.value / 100) * 360)
-                                let endAngle = startAngle + segmentAngle - gap
-
-                                var path = Path()
-                                path.addArc(
-                                    center: drawingCenter,
-                                    radius: outerRadius,
-                                    startAngle: startAngle,
-                                    endAngle: endAngle,
-                                    clockwise: false
-                                )
-                                path.addArc(
-                                    center: drawingCenter,
-                                    radius: innerRadius,
-                                    startAngle: endAngle,
-                                    endAngle: startAngle,
-                                    clockwise: true
-                                )
-                                path.closeSubpath()
-
-                                context.fill(path, with: .color(segment.color))
-                                startAngle = startAngle + segmentAngle
-                            }
-                        }
-                        .frame(width: size, height: size)
-                        .overlay {
-                            Circle()
-                                .fill(Color.white)
-                                .frame(width: innerRadius * 2, height: innerRadius * 2)
-                        }
-
-                        ForEach(positionedSegments(in: size, center: center, labelRadius: labelRadius)) { item in
-                            DonutLabel(segment: item.segment)
-                                .position(item.position)
-                        }
+            
+            // Donut with labels — fixed size container
+            ZStack {
+                // Draw donut ring
+                Canvas { context, size in
+                    let center = CGPoint(x: size.width / 2, y: size.height / 2)
+                    let outerR: CGFloat = 90
+                    let innerR: CGFloat = 54
+                    var startAngle = Angle.degrees(-90)
+                    
+                    for segment in segments {
+                        let gap = Angle.degrees(3)
+                        let sweep = Angle.degrees((segment.value / 100) * 360)
+                        let endAngle = startAngle + sweep - gap
+                        
+                        var path = Path()
+                        path.addArc(center: center, radius: outerR,
+                                    startAngle: startAngle, endAngle: endAngle,
+                                    clockwise: false)
+                        path.addArc(center: center, radius: innerR,
+                                    startAngle: endAngle, endAngle: startAngle,
+                                    clockwise: true)
+                        path.closeSubpath()
+                        context.fill(path, with: .color(segment.color))
+                        startAngle = startAngle + sweep
                     }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
-                .frame(height: 280)
-                Spacer()
+                .frame(width: 280, height: 280)
+                
+                // White hole
+                Circle()
+                    .fill(Color.white)
+                    .frame(width: 108, height: 108)
+                
+                // Labels positioned at mid-angle of each segment
+                ForEach(labelPositions(canvasSize: 280, outerR: 90), id: \.name) { item in
+                    VStack(spacing: 1) {
+                        Text(item.percent)
+                            .font(.system(size: 13, weight: .bold))
+                            .foregroundColor(.darkText)
+                        Text(item.name)
+                            .font(.system(size: 11))
+                            .foregroundColor(.subText)
+                    }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 5)
+                    .background(Color.white)
+                    .cornerRadius(10)
+                    .shadow(color: .black.opacity(0.08), radius: 4, x: 0, y: 2)
+                    .position(x: item.x, y: item.y)
+                }
             }
-            .frame(maxWidth: .infinity)
+            .frame(width: 280, height: 280)
+            .frame(maxWidth: .infinity)  // center horizontally
         }
         .cardStyle()
     }
-
-    private func positionedSegments(in size: CGFloat, center: CGPoint, labelRadius: CGFloat) -> [PositionedSegment] {
-        var positioned: [PositionedSegment] = []
+    
+    private struct LabelItem {
+        let name: String
+        let percent: String
+        let x: CGFloat
+        let y: CGFloat
+    }
+    
+    private func labelPositions(canvasSize: CGFloat, outerR: CGFloat) -> [LabelItem] {
+        let center = canvasSize / 2
+        let labelR = outerR + 52  // distance from center to label
+        var result: [LabelItem] = []
         var currentAngle = -90.0
         
         for segment in segments {
-            let segmentAngle = (segment.value / 100.0) * 360.0
-            let middleAngle = currentAngle + (segmentAngle / 2.0)
-            let angleInRadians = middleAngle * .pi / 180.0
+            let sweep = (segment.value / 100.0) * 360.0
+            let midAngle = currentAngle + sweep / 2.0
+            let rad = midAngle * .pi / 180.0
             
-            let x = center.x + labelRadius * cos(angleInRadians)
-            let y = center.y + labelRadius * sin(angleInRadians)
+            let x = center + labelR * cos(rad)
+            let y = center + labelR * sin(rad)
             
-            positioned.append(PositionedSegment(segment: segment, position: CGPoint(x: x, y: y)))
-            currentAngle += segmentAngle
+            result.append(LabelItem(
+                name: segment.name,
+                percent: "\(Int(segment.value))%",
+                x: x, y: y
+            ))
+            currentAngle += sweep
         }
-        return positioned
+        return result
     }
 }
 
