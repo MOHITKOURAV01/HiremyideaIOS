@@ -558,7 +558,7 @@ private struct WeightChartCard: View {
     }
 }
 
-struct SymptomDonutCard: View {
+private struct SymptomDonutCard: View {
     let segments: [DonutSegment]
     
     var body: some View {
