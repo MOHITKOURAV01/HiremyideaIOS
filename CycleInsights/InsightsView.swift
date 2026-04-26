@@ -370,7 +370,76 @@ private struct CycleTrendBar: View {
     }
 }
 
+private struct WeightChartCard: View {
+    let data: [WeightDatum]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Current Weight")
+                        .font(.system(size: 14))
+                        .foregroundColor(.subText)
+                    Text("64.5 kg")
+                        .font(.system(size: 24, weight: .bold))
+                        .foregroundColor(.darkText)
+                }
+                Spacer()
+                Text("+1.2 kg")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(.softPink)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color.softPink.opacity(0.1))
+                    .cornerRadius(6)
+            }
+
+            Chart {
+                ForEach(data) { item in
+                    AreaMark(
+                        x: .value("Month", item.month),
+                        y: .value("Weight", item.value)
+                    )
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [Color.softPink.opacity(0.3), Color.softPink.opacity(0.0)],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+                    .interpolationMethod(.catmullRom)
+                }
+                ForEach(data) { item in
+                    LineMark(
+                        x: .value("Month", item.month),
+                        y: .value("Weight", item.value)
+                    )
+                    .foregroundStyle(Color.softPink)
+                    .lineStyle(.init(lineWidth: 3))
+                    .interpolationMethod(.catmullRom)
+                }
+            }
+            .frame(height: 120)
+            .chartYScale(domain: 60...70)
+            .chartXAxis {
+                AxisMarks(values: data.map(\.month)) { value in
+                    AxisValueLabel {
+                        if let month = value.as(String.self) {
+                            Text(month)
+                                .font(.system(size: 12))
+                                .foregroundColor(.subText)
+                        }
+                    }
+                }
+            }
+            .chartYAxis(.hidden)
+        }
+        .cardStyle()
+    }
+}
+
 #Preview {
+
 
 
 
