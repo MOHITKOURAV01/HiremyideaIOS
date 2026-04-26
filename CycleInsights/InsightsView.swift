@@ -8,11 +8,10 @@ struct InsightsView: View {
     @State private var visibleStartIndex = 0
 
     private let stabilityData = [
-        StabilityDatum(month: "Jan", lower: 26, center: 28, upper: 30),
-        StabilityDatum(month: "Feb", lower: 25, center: 27, upper: 29),
-        StabilityDatum(month: "Mar", lower: 27, center: 29, upper: 31),
-        StabilityDatum(month: "Apr", lower: 26, center: 28, upper: 30),
-        StabilityDatum(month: "May", lower: 28, center: 30, upper: 32)
+        StabilityDatum(month: "Jan", lower: 24.0, center: 24.5, upper: 25.5),
+        StabilityDatum(month: "Feb", lower: 24.5, center: 25.5, upper: 27.0),
+        StabilityDatum(month: "Mar", lower: 26.5, center: 28.0, upper: 30.5),
+        StabilityDatum(month: "Apr", lower: 27.0, center: 29.5, upper: 32.0)
     ]
 
     private let cycleTrends = [
@@ -120,7 +119,7 @@ struct InsightsView: View {
                             .font(.system(size: 22, weight: .bold))
                             .foregroundColor(.white)
                             .frame(width: 50, height: 50)
-                            .background(Color.black)
+                            .background(Color(hex:"F0F0F0"))  // light grey, not black
                             .clipShape(Circle())
                     }
                     Spacer()
@@ -129,8 +128,13 @@ struct InsightsView: View {
                 .padding(.bottom, geometry.safeAreaInsets.bottom > 0 ? geometry.safeAreaInsets.bottom : 12)
                 .background(
                     Color.white
-                        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
-                        .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: -2)
+                        .clipShape(
+                            UnevenRoundedRectangle(
+                                topLeadingRadius: 20, bottomLeadingRadius: 0,
+                                bottomTrailingRadius: 0, topTrailingRadius: 20
+                            )
+                        )
+                        .shadow(color: .black.opacity(0.08), radius: 12, x: 0, y: -4)
                 )
                 .ignoresSafeArea(edges: .bottom)
             }
@@ -277,8 +281,9 @@ private struct StabilitySummaryCard: View {
                     AxisValueLabel {
                         if let month = value.as(String.self) {
                             Text(month)
-                                .font(.system(size: 12))
-                                .foregroundColor(.subText)
+                                .font(.system(size: 12, 
+                                              weight: month == "Mar" ? .bold : .regular))
+                                .foregroundColor(month == "Mar" ? .darkText : .subText)
                         }
                     }
                 }
@@ -296,8 +301,8 @@ private struct StabilitySummaryCard: View {
             }
             .chartOverlay { proxy in
                 GeometryReader { geo in
-                    let month = data[data.count - 1].month
-                    let center = data[data.count - 1].center
+                    let month = data[2].month   // Mar
+                    let center = data[2].center // 28.0
                     
                     if let x = proxy.position(forX: month),
                        let y = proxy.position(forY: center) {
@@ -320,6 +325,20 @@ private struct StabilitySummaryCard: View {
                                 .frame(width: 8, height: 4)
                         }
                         .position(x: x, y: y - 22)
+
+                        // Dashed vertical line
+                        Path { path in
+                            path.move(to: CGPoint(x: x, y: y))
+                            path.addLine(to: CGPoint(x: x, y: geo.size.height))
+                        }
+                        .stroke(style: StrokeStyle(lineWidth: 1, dash: [4]))
+                        .foregroundColor(Color.gray.opacity(0.5))
+                        
+                        // Green dot at data point
+                        Circle()
+                            .fill(Color(hex: "5E8B7E"))
+                            .frame(width: 10, height: 10)
+                            .position(x: x, y: y)
                     }
                 }
             }
@@ -402,33 +421,31 @@ private struct CycleTrendBar: View {
                 .foregroundColor(.darkText)
 
             ZStack(alignment: .bottom) {
-                // Lavender pill (full bar, rounded top only)
-                RoundedRectangle(cornerRadius: 22)
-                    .fill(Color(hex: "C4BEDE").opacity(0.6))
-                    .frame(width: 50, height: 170)
-
-                // Pink bottom section
+                // Full lavender pill
+                RoundedRectangle(cornerRadius: 24)
+                    .fill(Color(hex: "C8C0E0").opacity(0.55))
+                    .frame(width: 46, height: 180)
+                
+                // Small pink bottom ONLY — 36pt tall
                 UnevenRoundedRectangle(
-                    topLeadingRadius: 0,
-                    bottomLeadingRadius: 22,
-                    bottomTrailingRadius: 22,
-                    topTrailingRadius: 0
+                    topLeadingRadius: 0, bottomLeadingRadius: 24,
+                    bottomTrailingRadius: 24, topTrailingRadius: 0
                 )
-                .fill(Color(hex: "F2A0A8"))
-                .frame(width: 50, height: 60)
-
-                // Gear circle at junction point
+                .fill(Color(hex: "F2A0A8").opacity(0.85))
+                .frame(width: 46, height: 36)
+                
+                // Gear circle — positioned higher up
                 Circle()
                     .fill(Color(hex: "5E8B7E"))
-                    .frame(width: 44, height: 44)
+                    .frame(width: 42, height: 42)
                     .overlay(
                         Image(systemName: "gearshape.fill")
                             .foregroundColor(.white)
-                            .font(.system(size: 18))
+                            .font(.system(size: 16))
                     )
-                    .offset(y: -40)
+                    .offset(y: -56)  // higher position
             }
-            .frame(width: 50, height: 170)
+            .frame(width: 46, height: 180)
 
             Text(datum.month)
                 .font(.system(size: 12))
@@ -578,7 +595,7 @@ private struct SymptomDonutCard: View {
                 // Draw donut ring
                 Canvas { context, size in
                     let center = CGPoint(x: size.width / 2, y: size.height / 2)
-                    let outerR: CGFloat = 90
+                    let outerR: CGFloat = 80
                     let innerR: CGFloat = 54
                     var startAngle = Angle.degrees(-90)
                     
@@ -599,7 +616,7 @@ private struct SymptomDonutCard: View {
                         startAngle = startAngle + sweep
                     }
                 }
-                .frame(width: 280, height: 280)
+                .frame(width: 240, height: 240)
                 
                 // White hole
                 Circle()
@@ -607,7 +624,7 @@ private struct SymptomDonutCard: View {
                     .frame(width: 108, height: 108)
                 
                 // Labels positioned at mid-angle of each segment
-                ForEach(labelPositions(canvasSize: 280, outerR: 90), id: \.name) { item in
+                ForEach(labelPositions(canvasSize: 320, outerR: 80), id: \.name) { item in
                     VStack(spacing: 1) {
                         Text(item.percent)
                             .font(.system(size: 13, weight: .bold))
@@ -624,7 +641,7 @@ private struct SymptomDonutCard: View {
                     .position(x: item.x, y: item.y)
                 }
             }
-            .frame(width: 280, height: 280)
+            .frame(width: 320, height: 320)
             .frame(maxWidth: .infinity)  // center horizontally
         }
         .cardStyle()
@@ -638,8 +655,8 @@ private struct SymptomDonutCard: View {
     }
     
     private func labelPositions(canvasSize: CGFloat, outerR: CGFloat) -> [LabelItem] {
-        let center = canvasSize / 2
-        let labelR = outerR + 52  // distance from center to label
+        let center = canvasSize / 2  // = 160
+        let labelR = outerR + 58
         var result: [LabelItem] = []
         var currentAngle = -90.0
         
