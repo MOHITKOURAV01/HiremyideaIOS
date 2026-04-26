@@ -258,7 +258,25 @@ private struct Triangle: Shape {
     }
 }
 
+private struct CycleTrendsSection: View {
+    let data: [CycleTrendDatum]
+    @Binding var cycleScrollOffset: Int
+    @Binding var visibleStartIndex: Int
+
+    var body: some View {
+        VStack {
+            Text("Cycle Trends Placeholder")
+        }
+        .padding(16)
+        .background(Color.white)
+        .cornerRadius(16)
+        .shadow(color: .black.opacity(0.06), radius: 8, x: 0, y: 2)
+        .frame(maxWidth: .infinity)
+    }
+}
+
 #Preview {
+
 
 
 
