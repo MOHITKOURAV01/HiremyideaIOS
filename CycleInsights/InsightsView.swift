@@ -17,25 +17,26 @@ struct InsightsView: View {
 
     private let cycleTrends = [
         CycleTrendDatum(month: "Jan", value: 28),
-        CycleTrendDatum(month: "Feb", value: 27),
-        CycleTrendDatum(month: "Mar", value: 29),
-        CycleTrendDatum(month: "Apr", value: 28),
-        CycleTrendDatum(month: "May", value: 30)
+        CycleTrendDatum(month: "Feb", value: 30),
+        CycleTrendDatum(month: "Mar", value: 28),
+        CycleTrendDatum(month: "Apr", value: 32),
+        CycleTrendDatum(month: "May", value: 28),
+        CycleTrendDatum(month: "Jun", value: 28)
     ]
 
     private let weightData = [
-        WeightDatum(month: "Jan", value: 64),
-        WeightDatum(month: "Feb", value: 65),
-        WeightDatum(month: "Mar", value: 64),
-        WeightDatum(month: "Apr", value: 66),
-        WeightDatum(month: "May", value: 65)
+        WeightDatum(month: "Jan", value: 30),
+        WeightDatum(month: "Feb", value: 42),
+        WeightDatum(month: "Mar", value: 55),
+        WeightDatum(month: "Apr", value: 74),
+        WeightDatum(month: "May", value: 58)
     ]
 
     private let symptoms: [DonutSegment] = [
-        DonutSegment(name: "Cramps", value: 45, color: .lavenderPrimary),
-        DonutSegment(name: "Headache", value: 25, color: .softPink),
-        DonutSegment(name: "Fatigue", value: 20, color: .mintGreen),
-        DonutSegment(name: "Mood", value: 10, color: .darkTeal)
+        DonutSegment(name: "Mood",     value: 30, color: Color(hex:"F2A0A8")),
+        DonutSegment(name: "Bloating", value: 31, color: Color(hex:"B8B0D8")),
+        DonutSegment(name: "Fatigue",  value: 21, color: Color(hex:"E87070")),
+        DonutSegment(name: "Acne",     value: 17, color: Color(hex:"A8C8B8"))
     ]
 
     var body: some View {
@@ -61,18 +62,20 @@ struct InsightsView: View {
                                     CycleTrendsSection(data: cycleTrends, cycleScrollOffset: $cycleScrollOffset, visibleStartIndex: $visibleStartIndex)
                                         .entranceMotion(index: 3, appeared: appeared)
 
-                                    SectionHeader(title: "Health & Vitals")
+                                    SectionHeader(title: "Body & Metabolic Trends")
                                         .entranceMotion(index: 4, appeared: appeared)
                                     WeightChartCard(data: weightData)
                                         .entranceMotion(index: 5, appeared: appeared)
 
-                                    SymptomDonutCard(segments: symptoms)
+                                    SectionHeader(title: "Body Signals")
                                         .entranceMotion(index: 6, appeared: appeared)
+                                    SymptomDonutCard(segments: symptoms)
+                                        .entranceMotion(index: 7, appeared: appeared)
 
                                     SectionHeader(title: "Lifestyle Impact")
-                                        .entranceMotion(index: 7, appeared: appeared)
-                                    LifestyleImpactCard()
                                         .entranceMotion(index: 8, appeared: appeared)
+                                    LifestyleImpactCard()
+                                        .entranceMotion(index: 9, appeared: appeared)
                                         .padding(.bottom, 100)
                                 }
                                 .padding(.horizontal, 16)
@@ -88,7 +91,7 @@ struct InsightsView: View {
                 }
 
                 // Custom Tab Bar
-                HStack {
+                HStack(spacing: 0) {
                     ForEach(TabItem.allCases, id: \.self) { item in
                         Spacer()
                         Button(action: {
@@ -98,14 +101,29 @@ struct InsightsView: View {
                         }) {
                             VStack(spacing: 4) {
                                 Image(systemName: item.icon)
-                                    .font(.system(size: 20))
+                                    .font(.system(size: 22))
+                                    .scaleEffect(selectedTab == item ? 1.1 : 1.0)
+                                    .animation(.spring(response: 0.3, dampingFraction: 0.6), 
+                                               value: selectedTab)
                                 Text(item.title)
                                     .font(.system(size: 10, weight: .medium))
                             }
-                            .foregroundColor(selectedTab == item ? .lavenderPrimary : .subText)
+                            .foregroundColor(selectedTab == item ? .darkText : .subText)
                         }
                         Spacer()
                     }
+
+                    // Large + button (separate, not a tab)
+                    Spacer()
+                    Button(action: {}) {
+                        Image(systemName: "plus")
+                            .font(.system(size: 22, weight: .bold))
+                            .foregroundColor(.white)
+                            .frame(width: 50, height: 50)
+                            .background(Color.black)
+                            .clipShape(Circle())
+                    }
+                    Spacer()
                 }
                 .padding(.top, 12)
                 .padding(.bottom, geometry.safeAreaInsets.bottom > 0 ? geometry.safeAreaInsets.bottom : 12)
@@ -293,12 +311,12 @@ private struct StabilitySummaryCard: View {
                             }
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)
-                            .background(Color.mintGreen)
+                            .background(Color.black)
                             .foregroundColor(.white)
                             .cornerRadius(4)
                             
                             Triangle()
-                                .fill(Color.mintGreen)
+                                .fill(Color.black)
                                 .frame(width: 8, height: 4)
                         }
                         .position(x: x, y: y - 22)
@@ -424,28 +442,52 @@ private struct CycleTrendBar: View {
 
 private struct WeightChartCard: View {
     let data: [WeightDatum]
+    @State private var selectedPeriod = "Monthly"
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Current Weight")
-                        .font(.system(size: 14))
-                        .foregroundColor(.subText)
-                    Text("64.5 kg")
-                        .font(.system(size: 24, weight: .bold))
+                    Text("Your weight")
+                        .font(.system(size: 16, weight: .bold))
                         .foregroundColor(.darkText)
+                    Text("in kg")
+                        .font(.system(size: 12))
+                        .foregroundColor(.subText)
                 }
                 Spacer()
-                Text("+1.2 kg")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(.softPink)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Color.softPink.opacity(0.1))
-                    .cornerRadius(6)
+                HStack(spacing: 0) {
+                    Button(action: { selectedPeriod = "Monthly" }) {
+                        Text("Monthly")
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundColor(selectedPeriod == "Monthly" ? .white : .darkText)
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 6)
+                            .background(
+                                selectedPeriod == "Monthly" 
+                                    ? Color.black 
+                                    : Color.gray.opacity(0.1)
+                            )
+                            .cornerRadius(20)
+                    }
+                    Button(action: { selectedPeriod = "Weekly" }) {
+                        Text("Weekly")
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundColor(selectedPeriod == "Weekly" ? .white : .darkText)
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 6)
+                            .background(
+                                selectedPeriod == "Weekly" 
+                                    ? Color.black 
+                                    : Color.gray.opacity(0.1)
+                            )
+                            .cornerRadius(20)
+                    }
+                }
+                .background(Color.gray.opacity(0.08))
+                .cornerRadius(22)
             }
-
+            
             Chart {
                 ForEach(data) { item in
                     AreaMark(
@@ -454,9 +496,8 @@ private struct WeightChartCard: View {
                     )
                     .foregroundStyle(
                         LinearGradient(
-                            colors: [Color.softPink.opacity(0.3), Color.softPink.opacity(0.0)],
-                            startPoint: .top,
-                            endPoint: .bottom
+                            colors: [Color.softPink.opacity(0.45), Color.softPink.opacity(0.0)],
+                            startPoint: .top, endPoint: .bottom
                         )
                     )
                     .interpolationMethod(.catmullRom)
@@ -467,24 +508,47 @@ private struct WeightChartCard: View {
                         y: .value("Weight", item.value)
                     )
                     .foregroundStyle(Color.softPink)
-                    .lineStyle(.init(lineWidth: 3))
+                    .lineStyle(.init(lineWidth: 2))
                     .interpolationMethod(.catmullRom)
+                    
+                    PointMark(
+                        x: .value("Month", item.month),
+                        y: .value("Weight", item.value)
+                    )
+                    .symbolSize(40)
+                    .foregroundStyle(Color.white)
+                    .annotation(position: .overlay) {
+                        Circle()
+                            .stroke(Color.softPink, lineWidth: 2)
+                            .frame(width: 8, height: 8)
+                    }
+                }
+                RuleMark(y: .value("Ref", 50))
+                    .lineStyle(StrokeStyle(lineWidth: 1, dash: [4]))
+                    .foregroundStyle(Color.gray.opacity(0.4))
+            }
+            .frame(height: 160)
+            .chartYScale(domain: 25...80)
+            .chartYAxis {
+                AxisMarks(position: .leading, values: [25, 50, 75]) { value in
+                    AxisValueLabel {
+                        if let v = value.as(Int.self) {
+                            Text("\(v)").font(.system(size: 11)).foregroundColor(.subText)
+                        }
+                    }
+                    AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5))
+                        .foregroundStyle(Color.gray.opacity(0.2))
                 }
             }
-            .frame(height: 120)
-            .chartYScale(domain: 60...70)
             .chartXAxis {
                 AxisMarks(values: data.map(\.month)) { value in
                     AxisValueLabel {
-                        if let month = value.as(String.self) {
-                            Text(month)
-                                .font(.system(size: 12))
-                                .foregroundColor(.subText)
+                        if let m = value.as(String.self) {
+                            Text(m).font(.system(size: 11)).foregroundColor(.subText)
                         }
                     }
                 }
             }
-            .chartYAxis(.hidden)
         }
         .cardStyle()
     }
@@ -496,10 +560,10 @@ private struct SymptomDonutCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
             VStack(alignment: .leading, spacing: 4) {
-                Text("Symptom Distribution")
+                Text("Symptom Trends")
                     .font(.system(size: 16, weight: .bold))
                     .foregroundColor(.darkText)
-                Text("Most frequent symptoms this cycle.")
+                Text("Compared to last cycle")
                     .font(.system(size: 13))
                     .foregroundColor(.subText)
             }
@@ -590,11 +654,11 @@ private struct DonutLabel: View {
     
     var body: some View {
         VStack(spacing: 2) {
-            Text(segment.name)
-                .font(.system(size: 11, weight: .bold))
-                .foregroundColor(.darkText)
             Text("\(Int(segment.value))%")
-                .font(.system(size: 10, weight: .medium))
+                .font(.system(size: 13, weight: .bold))
+                .foregroundColor(.darkText)
+            Text(segment.name)
+                .font(.system(size: 11))
                 .foregroundColor(.subText)
         }
         .padding(.horizontal, 8)
@@ -622,39 +686,39 @@ private struct LifestyleImpactCard: View {
     @State private var tappedCell: String? = nil
     
     private let rows = [
-        LifestyleRow(label: "Sleep", filledCount: 8, color: .lavenderPrimary),
-        LifestyleRow(label: "Stress", filledCount: 4, color: .softPink),
-        LifestyleRow(label: "Activity", filledCount: 7, color: .mintGreen),
-        LifestyleRow(label: "Diet", filledCount: 5, color: .darkTeal)
+        LifestyleRow(label: "Sleep",    filledCount: 7, color: .lavenderPrimary),
+        LifestyleRow(label: "Hydrate",  filledCount: 4, color: .softPink),
+        LifestyleRow(label: "Caffeine", filledCount: 5, color: .mintGreen),
+        LifestyleRow(label: "Exercise", filledCount: 4, color: .softPink)
     ]
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             controlsHeader
 
-            ScrollView(.horizontal, showsIndicators: false) {
-                VStack(alignment: .leading, spacing: 10) {
-                    ForEach(rows) { row in
-                        HStack(spacing: 4) {
-                            Text(row.label)
-                                .font(.system(size: 13, weight: .medium))
-                                .foregroundColor(.subText)
-                                .frame(width: 65, alignment: .leading)
+            VStack(alignment: .leading, spacing: 10) {
+                ForEach(rows) { row in
+                    HStack(spacing: 4) {
+                        Text(row.label)
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundColor(.subText)
+                            .frame(width: 65, alignment: .leading)
 
-                            HStack(spacing: 3) {
-                                ForEach(0..<10, id: \.self) { index in
-                                    HeatmapCell(
-                                        id: "\(row.label)-\(index)",
-                                        color: row.color,
-                                        isFilled: index < row.filledCount,
-                                        tappedCell: $tappedCell
-                                    )
-                                }
+                        HStack(spacing: 3) {
+                            ForEach(0..<10, id: \.self) { index in
+                                HeatmapCell(
+                                    id: "\(row.label)-\(index)",
+                                    color: row.color,
+                                    isFilled: index < row.filledCount,
+                                    tappedCell: $tappedCell
+                                )
+                                .frame(width: 24, height: 24)
                             }
                         }
                     }
                 }
             }
+            .frame(maxWidth: .infinity)
         }
         .cardStyle()
     }
@@ -784,21 +848,21 @@ private struct LifestyleRow: Identifiable {
 }
 
 private enum TabItem: Int, CaseIterable {
-    case home, insights, track
-
+    case home, track, insights
+    
     var title: String {
         switch self {
         case .home: return "Home"
-        case .insights: return "Cycle Insights"
         case .track: return "Track"
+        case .insights: return "Insights"
         }
     }
-
+    
     var icon: String {
         switch self {
         case .home: return "house.fill"
+        case .track: return "clock"
         case .insights: return "chart.bar.fill"
-        case .track: return "plus.circle.fill"
         }
     }
 }
