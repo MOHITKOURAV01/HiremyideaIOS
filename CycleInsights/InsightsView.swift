@@ -68,6 +68,63 @@ extension Color {
     static let accentPurple = Color(hex: "8B7DB8")
 }
 
+
+private struct TopNavigationBar: View {
+    let topInset: CGFloat
+    let title: String
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            LinearGradient(
+                colors: [Color(hex: "FCE8E8").opacity(0.7), Color(hex: "F2F2F7")],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .frame(height: 50)
+            .ignoresSafeArea(edges: .top)
+
+            HStack {
+                DotGridLogo()
+                Spacer()
+                Text(title)
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundColor(.darkText)
+                Spacer()
+                Color.clear
+                    .frame(width: 20, height: 20)
+            }
+            .padding(.top, 8)
+            .padding(.bottom, 8)
+        }
+        .frame(height: 50)
+    }
+}
+
+private struct DotGridLogo: View {
+    private let colors: [Color] = [.lavenderPrimary, .softPink, .mintGreen, .accentPurple]
+
+    var body: some View {
+        VStack(spacing: 2) {
+            HStack(spacing: 2) {
+                ForEach(0..<2, id: \.self) { index in
+                    Circle()
+                        .fill(colors[index])
+                        .frame(width: 8, height: 8)
+                }
+            }
+            HStack(spacing: 2) {
+                ForEach(2..<4, id: \.self) { index in
+                    Circle()
+                        .fill(colors[index])
+                        .frame(width: 8, height: 8)
+                }
+            }
+        }
+        .frame(width: 20, height: 20)
+    }
+}
+
 #Preview {
+
     InsightsView()
 }
