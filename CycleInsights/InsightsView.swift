@@ -124,7 +124,31 @@ private struct DotGridLogo: View {
     }
 }
 
+private struct SectionHeader: View {
+    let title: String
+
+    var body: some View {
+        Text(title)
+            .font(.system(size: 20, weight: .bold, design: .default))
+            .foregroundColor(.darkText)
+            .padding(.top, 8)
+            .padding(.bottom, 4)
+    }
+}
+
+private extension View {
+    func cardStyle() -> some View {
+        self
+            .padding(16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color.cardWhite)
+            .cornerRadius(16)
+            .shadow(color: .black.opacity(0.07), radius: 12, x: 0, y: 4)
+    }
+}
+
 #Preview {
+
 
     InsightsView()
 }
