@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="app_logo.png" width="120" />
+</p>
+
 # Cycle Insights
 
 [![Swift](https://img.shields.io/badge/Swift-5.9-orange.svg?style=flat&logo=swift)](https://swift.org)
