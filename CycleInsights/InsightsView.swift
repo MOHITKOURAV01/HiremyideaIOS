@@ -427,31 +427,32 @@ private struct CycleTrendBar: View {
                 .foregroundColor(.darkText)
 
             ZStack(alignment: .bottom) {
-                // Full lavender pill background
-                RoundedRectangle(cornerRadius: 24)
-                    .fill(Color(hex: "C8C0E0").opacity(0.5))
-                    .frame(width: 46, height: 180)
+                // Full lavender pill — entire bar height
+                RoundedRectangle(cornerRadius: 22)
+                    .fill(Color(hex: "C4BCE0").opacity(0.55))
+                    .frame(width: 48, height: 190)
 
-                // Small pink bottom section
+                // Pink bottom — only 28pt (small sliver at bottom)
                 UnevenRoundedRectangle(
-                    topLeadingRadius: 0, bottomLeadingRadius: 24,
-                    bottomTrailingRadius: 24, topTrailingRadius: 0
+                    topLeadingRadius: 0, bottomLeadingRadius: 22,
+                    bottomTrailingRadius: 22, topTrailingRadius: 0
                 )
-                .fill(Color(hex: "F2A0A8").opacity(0.9))
-                .frame(width: 46, height: 40)
+                .fill(Color(hex: "F2A0A8"))
+                .frame(width: 48, height: 28)
 
-                // Gear circle at junction
+                // Gear circle — sits at bottom of lavender / top of pink junction
+                // offset(y: -28) means bottom of circle aligns with top of pink section
                 Circle()
                     .fill(Color(hex: "5E8B7E"))
-                    .frame(width: 42, height: 42)
+                    .frame(width: 44, height: 44)
                     .overlay(
                         Image(systemName: "gearshape.fill")
                             .foregroundColor(.white)
-                            .font(.system(size: 16))
+                            .font(.system(size: 17))
                     )
-                    .offset(y: -52)
+                    .offset(y: -28)
             }
-            .frame(width: 46, height: 180)
+            .frame(width: 48, height: 190)
 
             Text(datum.month)
                 .font(.system(size: 12))
