@@ -11,9 +11,12 @@ A premium, health-focused iOS application designed to provide deep insights into
 - **Health & Vitals**: Track weight changes and other vitals with interactive line and area charts.
 - **Premium Design**: Modern, glassmorphic UI with vibrant colors, smooth entrance animations, and a custom-built navigation system.
 
-## 📱 Preview
+## Preview
 
-![Cycle Insights Dashboard](screenshot_simulator.png)
+<p align="center">
+  <img src="screenshot_simulator.png" width="45%" />
+  <img src="screenshot_simulator_2.png" width="45%" />
+</p>
 
 ## 🛠 Tech Stack
 
