@@ -14,19 +14,19 @@ In an era of personalized health, Cycle Insights bridges the gap between raw dat
 
 ## Core Features
 
-### 📊 Stability Summary
+### Stability Summary
 Utilizes custom area and line charts to track cycle consistency. The integrated tooltip system provides real-time feedback on stability trends, helping users understand variations in their biological rhythm.
 
-### 📈 Cycle Trend Analytics
+### Cycle Trend Analytics
 Visualize cycle length over time with interactive, scrollable bar charts. Designed with a custom-themed design system, these charts provide a clear historical perspective of your reproductive health.
 
-### 🥗 Body & Metabolic Tracking
+### Body & Metabolic Tracking
 Monitor essential vitals such as weight and metabolic signals. The application uses interactive point-mark charts with dashed reference lines to track progress against health goals.
 
-### 🧬 Symptom Distribution
+### Symptom Distribution
 Identifies recurring patterns using a high-precision donut chart. This visual breakdown helps in understanding which symptoms dominate different phases of the cycle.
 
-### 🗓️ Lifestyle Correlation
+### Lifestyle Correlation
 A specialized heatmap tracks the correlation between daily habits (Sleep, Hydration, Caffeine, Exercise) and cycle health. This multi-dimensional view enables users to see how their lifestyle choices impact their overall well-being.
 
 ## Technical Excellence
