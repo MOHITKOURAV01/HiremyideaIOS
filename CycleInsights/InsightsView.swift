@@ -196,32 +196,38 @@ private struct TopNavigationBar: View {
             .ignoresSafeArea(edges: .top)
 
             HStack {
-                DotGridLogo()
+                AppLogo()
                 Spacer()
                 Text(title)
                     .font(.system(size: 18, weight: .bold))
                     .foregroundColor(.darkText)
                 Spacer()
-                Color.clear.frame(width: 20, height: 20)
+                // Action button placeholder
+                Image(systemName: "bell.badge")
+                    .font(.system(size: 16))
+                    .foregroundColor(.subText)
+                    .frame(width: 32, height: 32)
             }
+            .padding(.horizontal, 16)
             .padding(.vertical, 8)
         }
         .frame(height: 50)
     }
 }
 
-private struct DotGridLogo: View {
-    private let colors: [Color] = [.lavenderPrimary, .softPink, .mintGreen, .accentPurple]
+private struct AppLogo: View {
     var body: some View {
-        VStack(spacing: 2) {
-            HStack(spacing: 2) {
-                ForEach(0..<2, id: \.self) { Circle().fill(colors[$0]).frame(width: 8, height: 8) }
-            }
-            HStack(spacing: 2) {
-                ForEach(2..<4, id: \.self) { Circle().fill(colors[$0]).frame(width: 8, height: 8) }
-            }
+        ZStack {
+            RoundedRectangle(cornerRadius: 10)
+                .fill(Color(hex: "1A1C2E")) // Matches logo background
+                .frame(width: 36, height: 36)
+                .shadow(color: .black.opacity(0.15), radius: 4, x: 0, y: 2)
+            
+            Image("app_logo")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 28, height: 28)
         }
-        .frame(width: 20, height: 20)
     }
 }
 
