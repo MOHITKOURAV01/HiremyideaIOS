@@ -147,7 +147,37 @@ private extension View {
     }
 }
 
+private struct StabilitySummaryCard: View {
+    let data: [StabilityDatum]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text("Based on your recent logs and symptom patterns.")
+                .font(.system(size: 13))
+                .foregroundColor(.subText)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Stability Score")
+                    .font(.system(size: 14))
+                    .foregroundColor(.subText)
+
+                Text("78%")
+                    .font(.system(size: 32, weight: .heavy))
+                    .foregroundColor(.darkText)
+            }
+            
+            // Chart will be added in next commit
+            Rectangle()
+                .fill(Color.gray.opacity(0.1))
+                .frame(height: 130)
+                .cornerRadius(8)
+        }
+        .cardStyle()
+    }
+}
+
 #Preview {
+
 
 
     InsightsView()
