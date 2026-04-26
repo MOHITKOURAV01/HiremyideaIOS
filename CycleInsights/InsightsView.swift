@@ -264,8 +264,50 @@ private struct CycleTrendsSection: View {
     @Binding var visibleStartIndex: Int
 
     var body: some View {
-        VStack {
-            Text("Cycle Trends Placeholder")
+        HStack(spacing: 8) {
+            Button(action: {
+                withAnimation {
+                    visibleStartIndex = max(0, visibleStartIndex - 1)
+                }
+            }) {
+                Image(systemName: "chevron.left")
+                    .foregroundColor(.gray)
+                    .frame(width: 32, height: 32)
+                    .overlay(Circle().stroke(Color.gray.opacity(0.3)))
+            }
+            .disabled(visibleStartIndex == 0)
+            .opacity(visibleStartIndex == 0 ? 0.3 : 1.0)
+
+            ScrollViewReader { proxy in
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 12) {
+                        ForEach(data) { item in
+                            CycleTrendBar(datum: item)
+                                .id(item.id)
+                        }
+                    }
+                    .padding(.horizontal, 4)
+                }
+                .frame(maxWidth: .infinity)
+                .onChange(of: visibleStartIndex) { _, newValue in
+                    withAnimation {
+                        proxy.scrollTo(data[newValue].id, anchor: .leading)
+                    }
+                }
+            }
+
+            Button(action: {
+                withAnimation {
+                    visibleStartIndex = min(data.count - 1, visibleStartIndex + 1)
+                }
+            }) {
+                Image(systemName: "chevron.right")
+                    .foregroundColor(.gray)
+                    .frame(width: 32, height: 32)
+                    .overlay(Circle().stroke(Color.gray.opacity(0.3)))
+            }
+            .disabled(visibleStartIndex >= data.count - 1)
+            .opacity(visibleStartIndex >= data.count - 1 ? 0.3 : 1.0)
         }
         .padding(16)
         .background(Color.white)
