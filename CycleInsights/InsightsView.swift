@@ -780,23 +780,6 @@ private struct PlaceholderTabView: View {
                 TopNavigationBar(topInset: topInset, title: title)
 
                 VStack(alignment: .leading, spacing: 16) {
-                    SectionHeader(title: "Summary")
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack(spacing: 12) {
-                            Circle()
-                                .fill(Color.lavenderPrimary.opacity(0.2))
-                                .frame(width: 40, height: 40)
-                                .overlay(Image(systemName: "clock.fill").foregroundColor(.lavenderPrimary))
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("Next Phase")
-                                    .font(.system(size: 14)).foregroundColor(.subText)
-                                Text("Follicular in 3 days")
-                                    .font(.system(size: 16, weight: .bold)).foregroundColor(.darkText)
-                            }
-                        }
-                    }
-                    .cardStyle()
-
                     SectionHeader(title: "Recent Activity")
                     ForEach(0..<3) { _ in
                         HStack(spacing: 12) {
