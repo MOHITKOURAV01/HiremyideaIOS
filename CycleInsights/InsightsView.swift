@@ -166,11 +166,53 @@ private struct StabilitySummaryCard: View {
                     .foregroundColor(.darkText)
             }
             
-            // Chart will be added in next commit
-            Rectangle()
-                .fill(Color.gray.opacity(0.1))
-                .frame(height: 130)
-                .cornerRadius(8)
+            Chart {
+                ForEach(data) { item in
+                    AreaMark(
+                        x: .value("Month", item.month),
+                        yStart: .value("Lower", item.lower),
+                        yEnd: .value("Upper", item.upper)
+                    )
+                    .foregroundStyle(Color.lavenderPrimary.opacity(0.32))
+                    .interpolationMethod(.catmullRom)
+                }
+
+                ForEach(data) { item in
+                    LineMark(
+                        x: .value("Month", item.month),
+                        y: .value("Center", item.center)
+                    )
+                    .foregroundStyle(Color.lavenderPrimary)
+                    .lineStyle(.init(lineWidth: 2))
+                    .interpolationMethod(.catmullRom)
+                }
+            }
+            .frame(height: 130)
+            .padding(.top, 8)
+            .clipped()
+            .chartYScale(domain: 24...32)
+            .chartXAxis {
+                AxisMarks(values: data.map(\.month)) { value in
+                    AxisValueLabel {
+                        if let month = value.as(String.self) {
+                            Text(month)
+                                .font(.system(size: 12))
+                                .foregroundColor(.subText)
+                        }
+                    }
+                }
+            }
+            .chartYAxis {
+                AxisMarks(position: .leading, values: [24, 28, 32]) { value in
+                    AxisValueLabel {
+                        if let day = value.as(Int.self) {
+                            Text("\(day)d")
+                                .font(.system(size: 12))
+                                .foregroundColor(.subText)
+                        }
+                    }
+                }
+            }
         }
         .cardStyle()
     }
