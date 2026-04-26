@@ -2,8 +2,124 @@ import SwiftUI
 import Charts
 
 struct InsightsView: View {
+    @State private var selectedTab: TabItem = .insights
+    @State private var appeared = false
+    @State private var cycleScrollOffset = 0
+    @State private var visibleStartIndex = 0
+
+    private let stabilityData = [
+        StabilityDatum(month: "Jan", lower: 26, center: 28, upper: 30),
+        StabilityDatum(month: "Feb", lower: 25, center: 27, upper: 29),
+        StabilityDatum(month: "Mar", lower: 27, center: 29, upper: 31),
+        StabilityDatum(month: "Apr", lower: 26, center: 28, upper: 30),
+        StabilityDatum(month: "May", lower: 28, center: 30, upper: 32)
+    ]
+
+    private let cycleTrends = [
+        CycleTrendDatum(month: "Jan", value: 28),
+        CycleTrendDatum(month: "Feb", value: 27),
+        CycleTrendDatum(month: "Mar", value: 29),
+        CycleTrendDatum(month: "Apr", value: 28),
+        CycleTrendDatum(month: "May", value: 30)
+    ]
+
+    private let weightData = [
+        WeightDatum(month: "Jan", value: 64),
+        WeightDatum(month: "Feb", value: 65),
+        WeightDatum(month: "Mar", value: 64),
+        WeightDatum(month: "Apr", value: 66),
+        WeightDatum(month: "May", value: 65)
+    ]
+
+    private let symptoms: [DonutSegment] = [
+        DonutSegment(name: "Cramps", value: 45, color: .lavenderPrimary),
+        DonutSegment(name: "Headache", value: 25, color: .softPink),
+        DonutSegment(name: "Fatigue", value: 20, color: .mintGreen),
+        DonutSegment(name: "Mood", value: 10, color: .darkTeal)
+    ]
+
     var body: some View {
-        Text("Insights View")
+        GeometryReader { geometry in
+            ZStack(alignment: .bottom) {
+                Color.appBackground.ignoresSafeArea()
+
+                VStack(spacing: 0) {
+                    TabView(selection: $selectedTab) {
+                        switch selectedTab {
+                        case .insights:
+                            ScrollView(showsIndicators: false) {
+                                VStack(alignment: .leading, spacing: 16) {
+                                    TopNavigationBar(topInset: geometry.safeAreaInsets.top, title: selectedTab.title)
+
+                                    SectionHeader(title: "Stability Summary")
+                                        .entranceMotion(index: 0, appeared: appeared)
+                                    StabilitySummaryCard(data: stabilityData)
+                                        .entranceMotion(index: 1, appeared: appeared)
+
+                                    SectionHeader(title: "Cycle Trends")
+                                        .entranceMotion(index: 2, appeared: appeared)
+                                    CycleTrendsSection(data: cycleTrends, cycleScrollOffset: $cycleScrollOffset, visibleStartIndex: $visibleStartIndex)
+                                        .entranceMotion(index: 3, appeared: appeared)
+
+                                    SectionHeader(title: "Health & Vitals")
+                                        .entranceMotion(index: 4, appeared: appeared)
+                                    WeightChartCard(data: weightData)
+                                        .entranceMotion(index: 5, appeared: appeared)
+
+                                    SymptomDonutCard(segments: symptoms)
+                                        .entranceMotion(index: 6, appeared: appeared)
+
+                                    SectionHeader(title: "Lifestyle Impact")
+                                        .entranceMotion(index: 7, appeared: appeared)
+                                    LifestyleImpactCard()
+                                        .entranceMotion(index: 8, appeared: appeared)
+                                        .padding(.bottom, 100)
+                                }
+                                .padding(.horizontal, 16)
+                                .frame(maxWidth: .infinity, alignment: .top)
+                            }
+                            .transition(.opacity.combined(with: .move(edge: .trailing)))
+                        case .home, .track:
+                            PlaceholderTabView(topInset: geometry.safeAreaInsets.top, title: selectedTab.title)
+                                .transition(.opacity.combined(with: .move(edge: .leading)))
+                        }
+                    }
+                    .tabViewStyle(.page(indexDisplayMode: .never))
+                }
+
+                // Custom Tab Bar
+                HStack {
+                    ForEach(TabItem.allCases, id: \.self) { item in
+                        Spacer()
+                        Button(action: {
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                selectedTab = item
+                            }
+                        }) {
+                            VStack(spacing: 4) {
+                                Image(systemName: item.icon)
+                                    .font(.system(size: 20))
+                                Text(item.title)
+                                    .font(.system(size: 10, weight: .medium))
+                            }
+                            .foregroundColor(selectedTab == item ? .lavenderPrimary : .subText)
+                        }
+                        Spacer()
+                    }
+                }
+                .padding(.top, 12)
+                .padding(.bottom, geometry.safeAreaInsets.bottom > 0 ? geometry.safeAreaInsets.bottom : 12)
+                .background(
+                    Color.white
+                        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+                        .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: -2)
+                )
+                .ignoresSafeArea(edges: .bottom)
+            }
+        }
+        .onAppear {
+            appeared = true
+        }
     }
 }
 
@@ -26,48 +142,6 @@ private struct WeightDatum: Identifiable {
     let month: String
     let value: Int
 }
-
-extension Color {
-    init(hex: String) {
-        let cleaned = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
-        var value: UInt64 = 0
-        Scanner(string: cleaned).scanHexInt64(&value)
-
-        let a: UInt64
-        let r: UInt64
-        let g: UInt64
-        let b: UInt64
-
-        switch cleaned.count {
-        case 6:
-            (a, r, g, b) = (255, (value >> 16) & 0xFF, (value >> 8) & 0xFF, value & 0xFF)
-        case 8:
-            (a, r, g, b) = ((value >> 24) & 0xFF, (value >> 16) & 0xFF, (value >> 8) & 0xFF, value & 0xFF)
-        default:
-            (a, r, g, b) = (255, 0, 0, 0)
-        }
-
-        self.init(
-            .sRGB,
-            red: Double(r) / 255,
-            green: Double(g) / 255,
-            blue: Double(b) / 255,
-            opacity: Double(a) / 255
-        )
-    }
-
-    static let appBackground = Color(hex: "F2F2F7")
-    static let cardWhite = Color.white
-    static let lavenderPrimary = Color(hex: "B8B0D8")
-    static let lavenderLight = Color(hex: "D4CEEC")
-    static let softPink = Color(hex: "F2A0A8")
-    static let mintGreen = Color(hex: "A8C8B8")
-    static let darkTeal = Color(hex: "5E8B7E")
-    static let darkText = Color(hex: "1C1C1E")
-    static let subText = Color(hex: "8E8E93")
-    static let accentPurple = Color(hex: "8B7DB8")
-}
-
 
 private struct TopNavigationBar: View {
     let topInset: CGFloat
@@ -133,17 +207,6 @@ private struct SectionHeader: View {
             .foregroundColor(.darkText)
             .padding(.top, 8)
             .padding(.bottom, 4)
-    }
-}
-
-private extension View {
-    func cardStyle() -> some View {
-        self
-            .padding(16)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color.cardWhite)
-            .cornerRadius(16)
-            .shadow(color: .black.opacity(0.07), radius: 12, x: 0, y: 4)
     }
 }
 
@@ -244,17 +307,6 @@ private struct StabilitySummaryCard: View {
             }
         }
         .cardStyle()
-    }
-}
-
-private struct Triangle: Shape {
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        path.move(to: CGPoint(x: rect.midX, y: rect.maxY))
-        path.addLine(to: CGPoint(x: rect.minX, y: rect.minY))
-        path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
-        path.closeSubpath()
-        return path
     }
 }
 
@@ -633,48 +685,6 @@ private struct LifestyleImpactCard: View {
     }
 }
 
-private struct LifestyleRow: Identifiable {
-    let id = UUID()
-    let label: String
-    let filledCount: Int
-    let color: Color
-}
-
-private struct HeatmapCell: View {
-    let id: String
-    let color: Color
-    let isFilled: Bool
-    @Binding var tappedCell: String?
-
-    var body: some View {
-        RoundedRectangle(cornerRadius: 6, style: .continuous)
-            .fill(isFilled ? color : color.opacity(0.1))
-            .overlay {
-                if isFilled {
-                    RoundedRectangle(cornerRadius: 6, style: .continuous)
-                        .fill(
-                            LinearGradient(
-                                colors: [Color.white.opacity(0.18), Color.clear],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                }
-            }
-            .frame(width: 24, height: 24)
-            .scaleEffect(tappedCell == id ? 1.2 : 1.0)
-            .animation(.spring(response: 0.2, dampingFraction: 0.5), value: tappedCell)
-            .onTapGesture {
-                tappedCell = id
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.18) {
-                    if tappedCell == id {
-                        tappedCell = nil
-                    }
-                }
-            }
-    }
-}
-
 private struct PlaceholderTabView: View {
     let topInset: CGFloat
     let title: String
@@ -731,6 +741,48 @@ private struct PlaceholderTabView: View {
     }
 }
 
+private struct HeatmapCell: View {
+    let id: String
+    let color: Color
+    let isFilled: Bool
+    @Binding var tappedCell: String?
+
+    var body: some View {
+        RoundedRectangle(cornerRadius: 6, style: .continuous)
+            .fill(isFilled ? color : color.opacity(0.1))
+            .overlay {
+                if isFilled {
+                    RoundedRectangle(cornerRadius: 6, style: .continuous)
+                        .fill(
+                            LinearGradient(
+                                colors: [Color.white.opacity(0.18), Color.clear],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                }
+            }
+            .frame(width: 24, height: 24)
+            .scaleEffect(tappedCell == id ? 1.2 : 1.0)
+            .animation(.spring(response: 0.2, dampingFraction: 0.5), value: tappedCell)
+            .onTapGesture {
+                tappedCell = id
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.18) {
+                    if tappedCell == id {
+                        tappedCell = nil
+                    }
+                }
+            }
+    }
+}
+
+private struct LifestyleRow: Identifiable {
+    let id = UUID()
+    let label: String
+    let filledCount: Int
+    let color: Color
+}
+
 private enum TabItem: Int, CaseIterable {
     case home, insights, track
 
@@ -751,16 +803,78 @@ private enum TabItem: Int, CaseIterable {
     }
 }
 
+private extension View {
+    func cardStyle() -> some View {
+        self
+            .padding(16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color.cardWhite)
+            .cornerRadius(16)
+            .shadow(color: .black.opacity(0.07), radius: 12, x: 0, y: 4)
+    }
+}
+
+private extension View {
+    func entranceMotion(index: Int, appeared: Bool) -> some View {
+        self
+            .opacity(appeared ? 1 : 0)
+            .offset(y: appeared ? 0 : 20)
+            .animation(.easeOut(duration: 0.4).delay(Double(index) * 0.08), value: appeared)
+    }
+}
+
+private struct Triangle: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.midX, y: rect.maxY))
+        path.addLine(to: CGPoint(x: rect.minX, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
+        path.closeSubpath()
+        return path
+    }
+}
+
+extension Color {
+    init(hex: String) {
+        let cleaned = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        var value: UInt64 = 0
+        Scanner(string: cleaned).scanHexInt64(&value)
+
+        let a: UInt64
+        let r: UInt64
+        let g: UInt64
+        let b: UInt64
+
+        switch cleaned.count {
+        case 6:
+            (a, r, g, b) = (255, (value >> 16) & 0xFF, (value >> 8) & 0xFF, value & 0xFF)
+        case 8:
+            (a, r, g, b) = ((value >> 24) & 0xFF, (value >> 16) & 0xFF, (value >> 8) & 0xFF, value & 0xFF)
+        default:
+            (a, r, g, b) = (255, 0, 0, 0)
+        }
+
+        self.init(
+            .sRGB,
+            red: Double(r) / 255,
+            green: Double(g) / 255,
+            blue: Double(b) / 255,
+            opacity: Double(a) / 255
+        )
+    }
+
+    static let appBackground = Color(hex: "F2F2F7")
+    static let cardWhite = Color.white
+    static let lavenderPrimary = Color(hex: "B8B0D8")
+    static let lavenderLight = Color(hex: "D4CEEC")
+    static let softPink = Color(hex: "F2A0A8")
+    static let mintGreen = Color(hex: "A8C8B8")
+    static let darkTeal = Color(hex: "5E8B7E")
+    static let darkText = Color(hex: "1C1C1E")
+    static let subText = Color(hex: "8E8E93")
+    static let accentPurple = Color(hex: "8B7DB8")
+}
+
 #Preview {
-
-
-
-
-
-
-
-
-
-
     InsightsView()
 }
