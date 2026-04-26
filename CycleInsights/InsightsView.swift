@@ -427,32 +427,38 @@ private struct CycleTrendBar: View {
                 .foregroundColor(.darkText)
 
             ZStack(alignment: .bottom) {
-                // Full lavender pill — entire bar height
+                // Full lavender pill — entire bar
                 RoundedRectangle(cornerRadius: 22)
                     .fill(Color(hex: "C4BCE0").opacity(0.55))
-                    .frame(width: 48, height: 190)
+                    .frame(width: 44, height: 200)
 
-                // Pink bottom — only 28pt (small sliver at bottom)
-                UnevenRoundedRectangle(
-                    topLeadingRadius: 0, bottomLeadingRadius: 22,
-                    bottomTrailingRadius: 22, topTrailingRadius: 0
-                )
-                .fill(Color(hex: "F2A0A8"))
-                .frame(width: 48, height: 28)
-
-                // Gear circle — sits at bottom of lavender / top of pink junction
-                // offset(y: -28) means bottom of circle aligns with top of pink section
-                Circle()
-                    .fill(Color(hex: "5E8B7E"))
-                    .frame(width: 44, height: 44)
-                    .overlay(
-                        Image(systemName: "gearshape.fill")
-                            .foregroundColor(.white)
-                            .font(.system(size: 17))
+                // Pink bottom section with water drop icon
+                ZStack {
+                    UnevenRoundedRectangle(
+                        topLeadingRadius: 0, bottomLeadingRadius: 22,
+                        bottomTrailingRadius: 22, topTrailingRadius: 0
                     )
-                    .offset(y: -28)
+                    .fill(Color(hex: "F2A0A8"))
+                    .frame(width: 44, height: 55)
+
+                    Image(systemName: "drop")
+                        .foregroundColor(.white.opacity(0.8))
+                        .font(.system(size: 13))
+                        .offset(y: 10)
+                }
+
+                // Small teal gear circle — positioned in middle of bar
+                Circle()
+                    .fill(Color(hex: "4A7A6A"))
+                    .frame(width: 36, height: 36)
+                    .overlay(
+                        Image(systemName: "gearshape")
+                            .foregroundColor(.white)
+                            .font(.system(size: 14, weight: .medium))
+                    )
+                    .offset(y: -80)
             }
-            .frame(width: 48, height: 190)
+            .frame(width: 44, height: 200)
 
             Text(datum.month)
                 .font(.system(size: 12))
@@ -773,19 +779,38 @@ private struct PlaceholderTabView: View {
             VStack(alignment: .leading, spacing: 24) {
                 TopNavigationBar(topInset: topInset, title: title)
 
-                SectionHeader(title: "Recent Activity")
-                ForEach(0..<3) { _ in
-                    HStack(spacing: 12) {
-                        RoundedRectangle(cornerRadius: 8)
-                            .fill(Color.gray.opacity(0.1))
-                            .frame(width: 48, height: 48)
-                        VStack(alignment: .leading, spacing: 4) {
-                            Rectangle().fill(Color.gray.opacity(0.2)).frame(width: 120, height: 12)
-                            Rectangle().fill(Color.gray.opacity(0.1)).frame(width: 80, height: 10)
+                VStack(alignment: .leading, spacing: 16) {
+                    SectionHeader(title: "Summary")
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack(spacing: 12) {
+                            Circle()
+                                .fill(Color.lavenderPrimary.opacity(0.2))
+                                .frame(width: 40, height: 40)
+                                .overlay(Image(systemName: "clock.fill").foregroundColor(.lavenderPrimary))
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Next Phase")
+                                    .font(.system(size: 14)).foregroundColor(.subText)
+                                Text("Follicular in 3 days")
+                                    .font(.system(size: 16, weight: .bold)).foregroundColor(.darkText)
+                            }
                         }
-                        Spacer()
                     }
                     .cardStyle()
+
+                    SectionHeader(title: "Recent Activity")
+                    ForEach(0..<3) { _ in
+                        HStack(spacing: 12) {
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color.gray.opacity(0.1))
+                                .frame(width: 48, height: 48)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Rectangle().fill(Color.gray.opacity(0.2)).frame(width: 120, height: 12)
+                                Rectangle().fill(Color.gray.opacity(0.1)).frame(width: 80, height: 10)
+                            }
+                            Spacer()
+                        }
+                        .cardStyle()
+                    }
                 }
             }
             .padding(.horizontal, 16)
