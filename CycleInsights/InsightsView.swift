@@ -582,7 +582,25 @@ private struct LifestyleImpactCard: View {
 
             ScrollView(.horizontal, showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 10) {
-                    Text("Lifestyle Correlation Heatmap Placeholder")
+                    ForEach(rows) { row in
+                        HStack(spacing: 4) {
+                            Text(row.label)
+                                .font(.system(size: 13, weight: .medium))
+                                .foregroundColor(.subText)
+                                .frame(width: 65, alignment: .leading)
+
+                            HStack(spacing: 3) {
+                                ForEach(0..<10, id: \.self) { index in
+                                    HeatmapCell(
+                                        id: "\(row.label)-\(index)",
+                                        color: row.color,
+                                        isFilled: index < row.filledCount,
+                                        tappedCell: $tappedCell
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -622,7 +640,43 @@ private struct LifestyleRow: Identifiable {
     let color: Color
 }
 
+private struct HeatmapCell: View {
+    let id: String
+    let color: Color
+    let isFilled: Bool
+    @Binding var tappedCell: String?
+
+    var body: some View {
+        RoundedRectangle(cornerRadius: 6, style: .continuous)
+            .fill(isFilled ? color : color.opacity(0.1))
+            .overlay {
+                if isFilled {
+                    RoundedRectangle(cornerRadius: 6, style: .continuous)
+                        .fill(
+                            LinearGradient(
+                                colors: [Color.white.opacity(0.18), Color.clear],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                }
+            }
+            .frame(width: 24, height: 24)
+            .scaleEffect(tappedCell == id ? 1.2 : 1.0)
+            .animation(.spring(response: 0.2, dampingFraction: 0.5), value: tappedCell)
+            .onTapGesture {
+                tappedCell = id
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.18) {
+                    if tappedCell == id {
+                        tappedCell = nil
+                    }
+                }
+            }
+    }
+}
+
 #Preview {
+
 
 
 
