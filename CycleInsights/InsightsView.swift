@@ -213,8 +213,48 @@ private struct StabilitySummaryCard: View {
                     }
                 }
             }
+            .chartOverlay { proxy in
+                GeometryReader { geo in
+                    let month = data[data.count - 1].month
+                    let center = data[data.count - 1].center
+                    
+                    if let x = proxy.position(forX: month),
+                       let y = proxy.position(forY: center) {
+                        
+                        VStack(spacing: 0) {
+                            HStack(spacing: 4) {
+                                Image(systemName: "arrow.up.right")
+                                    .font(.system(size: 10, weight: .bold))
+                                Text("Stability Improving")
+                                    .font(.system(size: 10, weight: .bold))
+                            }
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Color.mintGreen)
+                            .foregroundColor(.white)
+                            .cornerRadius(4)
+                            
+                            Triangle()
+                                .fill(Color.mintGreen)
+                                .frame(width: 8, height: 4)
+                        }
+                        .position(x: x, y: y - 22)
+                    }
+                }
+            }
         }
         .cardStyle()
+    }
+}
+
+private struct Triangle: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.midX, y: rect.maxY))
+        path.addLine(to: CGPoint(x: rect.minX, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
+        path.closeSubpath()
+        return path
     }
 }
 
