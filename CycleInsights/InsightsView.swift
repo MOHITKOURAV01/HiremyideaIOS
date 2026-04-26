@@ -566,7 +566,64 @@ private struct PositionedSegment: Identifiable {
     let position: CGPoint
 }
 
+private struct LifestyleImpactCard: View {
+    @State private var tappedCell: String? = nil
+    
+    private let rows = [
+        LifestyleRow(label: "Sleep", filledCount: 8, color: .lavenderPrimary),
+        LifestyleRow(label: "Stress", filledCount: 4, color: .softPink),
+        LifestyleRow(label: "Activity", filledCount: 7, color: .mintGreen),
+        LifestyleRow(label: "Diet", filledCount: 5, color: .darkTeal)
+    ]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            controlsHeader
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Lifestyle Correlation Heatmap Placeholder")
+                }
+            }
+        }
+        .cardStyle()
+    }
+
+    private var controlsHeader: some View {
+        HStack {
+            Text("Correlation Strength")
+                .font(.headline)
+                .foregroundColor(.darkText)
+
+            Spacer()
+
+            HStack(spacing: 4) {
+                Text("4 months")
+                    .font(.subheadline)
+                Image(systemName: "chevron.down")
+                    .font(.caption)
+            }
+            .foregroundColor(.darkText)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(
+                RoundedRectangle(cornerRadius: 20)
+                    .stroke(Color.gray.opacity(0.4))
+            )
+        }
+        .padding(.bottom, 12)
+    }
+}
+
+private struct LifestyleRow: Identifiable {
+    let id = UUID()
+    let label: String
+    let filledCount: Int
+    let color: Color
+}
+
 #Preview {
+
 
 
 
