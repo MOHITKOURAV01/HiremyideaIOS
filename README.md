@@ -49,5 +49,11 @@ A specialized heatmap tracks the correlation between daily habits (Sleep, Hydrat
 4. **Build & Run**:
    Press `Cmd + R` to experience the application.
 
+## Project Resources
+
+For additional documentation and project assets, please refer to the following resource:
+
+- **Full Project Documentation**: [View on Google Drive](https://drive.google.com/file/d/1CIbQYXzI8oVjHonjGFMO23QNJyoKTVRs/view?usp=sharing)
+
 ---
 *Empowering health through transparency and data-driven insights.*
