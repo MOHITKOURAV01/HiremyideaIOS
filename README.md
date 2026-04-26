@@ -1,46 +1,53 @@
 # Cycle Insights
 
-Cycle Insights is a professional-grade menstrual health tracking application for iOS. It leverages data visualization and lifestyle correlation to provide users with a deeper understanding of their biological patterns. The application is built with modern SwiftUI and Swift Charts, focusing on precision, aesthetics, and user engagement.
-
-## Key Features
-
-### Stability Analysis
-Monitor your cycle's consistency using interactive area charts. The application identifies patterns and provides dynamic feedback on stability trends over time.
-
-### Cycle Trend Visualization
-Track your cycle length across multiple months with custom-designed bar charts. The interactive scrolling interface allows for easy navigation through your historical data.
-
-### Symptom Distribution
-A comprehensive donut chart provides a visual breakdown of your most frequent symptoms, helping you identify recurring health patterns within each cycle.
-
-### Lifestyle Correlation
-The lifestyle impact heatmap correlates your logs for sleep, stress, activity, and diet with your cycle health, offering a holistic view of your wellbeing.
-
-### Health and Vitals
-Dedicated tracking for weight and other essential vitals with interactive line and area charts, ensuring you stay on top of your physical progress.
-
-## Preview
+Cycle Insights is a premium, data-driven menstrual health tracking application for iOS. Designed with precision and modern aesthetics, it provides a holistic view of biological patterns through advanced data visualization and correlation analysis.
 
 <p align="center">
-  <img src="ss1_dashboard.png" width="30%" />
-  <img src="ss2_charts.png" width="30%" />
-  <img src="ss3_lifestyle.png" width="30%" />
+  <img src="dashboard_preview.png" width="28%" />
+  <img src="metabolic_trends.png" width="28%" />
+  <img src="lifestyle_correlation.png" width="28%" />
 </p>
 
-## Technical Specifications
+## Overview
 
-- **Language**: Swift
-- **Framework**: SwiftUI
-- **Data Visualization**: Swift Charts
-- **Architecture**: MVVM
-- **UI/UX**: Custom-built design system with a focus on modern aesthetics and smooth animations.
+In an era of personalized health, Cycle Insights bridges the gap between raw data and actionable intelligence. Built exclusively with **SwiftUI** and **Swift Charts**, the application offers a fluid, interactive experience that makes tracking health metrics both intuitive and visually engaging.
 
-## Getting Started
+## Core Features
 
-1. Clone the repository to your local machine.
-2. Open `CycleInsights.xcodeproj` in the latest version of Xcode.
-3. Select an iOS Simulator (iPhone 15 Pro or later recommended).
-4. Build and run the project using Command + R.
+### 📊 Stability Summary
+Utilizes custom area and line charts to track cycle consistency. The integrated tooltip system provides real-time feedback on stability trends, helping users understand variations in their biological rhythm.
+
+### 📈 Cycle Trend Analytics
+Visualize cycle length over time with interactive, scrollable bar charts. Designed with a custom-themed design system, these charts provide a clear historical perspective of your reproductive health.
+
+### 🥗 Body & Metabolic Tracking
+Monitor essential vitals such as weight and metabolic signals. The application uses interactive point-mark charts with dashed reference lines to track progress against health goals.
+
+### 🧬 Symptom Distribution
+Identifies recurring patterns using a high-precision donut chart. This visual breakdown helps in understanding which symptoms dominate different phases of the cycle.
+
+### 🗓️ Lifestyle Correlation
+A specialized heatmap tracks the correlation between daily habits (Sleep, Hydration, Caffeine, Exercise) and cycle health. This multi-dimensional view enables users to see how their lifestyle choices impact their overall well-being.
+
+## Technical Excellence
+
+- **Native Performance**: Built entirely with Swift and SwiftUI for maximum performance and efficiency.
+- **Advanced Visualization**: Leverages the power of Swift Charts for precise and interactive data representation.
+- **Modern Design System**: Features a custom-built HSL-based color palette and premium typography for a state-of-the-art user experience.
+- **Fluid Animations**: Implemented custom transition and entrance motions for a "premium-feel" navigation.
+
+## Installation
+
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/MOHITKOURAV01/HiremyideaIOS.git
+   ```
+2. **Open the Project**:
+   Launch `CycleInsights.xcodeproj` in **Xcode 15.0** or later.
+3. **Environment**:
+   Target **iOS 17.0+** and select a modern simulator (iPhone 15 Pro or newer).
+4. **Build & Run**:
+   Press `Cmd + R` to experience the application.
 
 ---
-Developed for health transparency and data-driven insights.
+*Empowering health through transparency and data-driven insights.*
