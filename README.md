@@ -62,4 +62,4 @@ A specialized heatmap tracks the correlation between daily habits (Sleep, Hydrat
    Press `Cmd + R` to experience the application.
 
 ---
-*Empowering health through transparency and data-driven insights.*
+*Empowering health through transparency and data-driven insights. ❤️*
